@@ -2,6 +2,7 @@ import customtkinter
 from PIL import Image
 import xml.etree.ElementTree as Xml
 
+pages = {}
 width = 400
 height = 500
 selected = []
@@ -11,6 +12,7 @@ class Main(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
+        self.wm_overrideredirect(True)
         self.geometry(self.Center_Window_To_Display(width, height))
         self._set_appearance_mode("Light")
         self.title("MS Office")
@@ -18,20 +20,23 @@ class Main(customtkinter.CTk):
         self.mainFrame = customtkinter.CTkFrame(self, fg_color="white", border_width=1, border_color="orange",
                                                 corner_radius=0)
         self.mainFrame.pack(padx=3, pady=3, fill="both", expand=True)
-        self.headerFrame = customtkinter.CTkFrame(self.mainFrame, fg_color="transparent", height=26, corner_radius=0)
-        self.headerFrame.pack(side="top", padx=1, pady=(1, 0), fill="both")
-        self.headerFrame.bind("<ButtonPress-1>", self.start_drag)
-        self.headerFrame.bind("<B1-Motion>", self.on_drag)
-        self.headerFrame.bind("<ButtonRelease-1>", self.stop_drag)
-        self.headerFrame.bind("<Double-Button-1>", self.minimize_window)
 
-        self.show_frame(SelectApplication)
+        self.current_page = None
 
-        self.footerFrame = customtkinter.CTkFrame(self.mainFrame, fg_color="transparent", height=26, corner_radius=0)
-        self.footerFrame.pack(side="top", padx=1, pady=(0, 1), fill="both")
+        for P in (Download, SelectApplication):
+            page = P(self.mainFrame, self)
+            pages[P.__name__] = page
 
-    def show_frame(self, page_class):
-        page_class(self.mainFrame).pack(side="top", padx=1, fill="both", expand=True)
+        self.show_frame("SelectApplication")
+
+    def show_frame(self, page_name):
+        if self.current_page is not None:
+            self.current_page.pack_forget()
+        page = pages[page_name]
+        page.pack(side="top", padx=1, pady=1, fill="both", expand=True)
+        page.tkraise()
+
+        self.current_page = page
 
     def Center_Window_To_Display(self, _width: int, _height: int):
         screen_width = self.winfo_screenwidth()
@@ -55,10 +60,29 @@ class Main(customtkinter.CTk):
         self.withdraw()
 
 
-class SelectApplication(customtkinter.CTkFrame):
-    def __init__(self, parent):
+class Download(customtkinter.CTkFrame):
+    def __init__(self, parent, controller):
         super().__init__(parent)
-        self.configure(fg_color="transparent")
+        self.controller = controller
+
+        self.configure(fg_color="red", corner_radius=0)
+        self.btn = customtkinter.CTkButton(self, text="Download", width=100, height=30)
+        self.btn.pack(side="top", expand=True)
+        self.btn.bind("<Button-1>", lambda event: self.CLic())
+
+    def CLic(self):
+        self.controller.show_frame("SelectApplication")
+        x = self.controller.winfo_x()
+        y = self.controller.winfo_y()
+        _height = self.controller.winfo_height()
+        self.controller.geometry(f"400x500+{x}+{(y+100) - 250}")
+
+
+class SelectApplication(customtkinter.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+        self.configure(fg_color="transparent", corner_radius=0)
 
         self.icons = {
             "Logo": Image.open("Image_Resources/logo.png"),
@@ -79,14 +103,20 @@ class SelectApplication(customtkinter.CTkFrame):
         self.temp_file = "temp.xml"
 
         # Setup for each frame
-        self.titleFrame = customtkinter.CTkFrame(self, fg_color="transparent", height=20, border_width=0,
-                                                 corner_radius=0)
-        self.titleFrame.pack(side="top", padx=1, fill="both")
-        self.bodyFrame = customtkinter.CTkFrame(self, fg_color="transparent", border_width=0, corner_radius=0)
-        self.bodyFrame.pack(side="top", padx=1, fill="both", expand=True)
-        self.body1Frame = customtkinter.CTkFrame(self, fg_color="transparent", border_width=0,
-                                                 corner_radius=0)
-        self.body1Frame.pack(side="top", padx=1, fill="both")
+        self.headerFrame = customtkinter.CTkFrame(self, fg_color="transparent", height=26, corner_radius=0)
+        self.headerFrame.pack(side="top", fill="both")
+        self.headerFrame.bind("<ButtonPress-1>", controller.start_drag)
+        self.headerFrame.bind("<B1-Motion>", controller.on_drag)
+        self.headerFrame.bind("<ButtonRelease-1>", controller.stop_drag)
+        self.headerFrame.bind("<Double-Button-1>", controller.minimize_window)
+        self.titleFrame = customtkinter.CTkFrame(self, fg_color="transparent", height=20, corner_radius=0)
+        self.titleFrame.pack(side="top", fill="both")
+        self.bodyFrame = customtkinter.CTkFrame(self, fg_color="transparent", corner_radius=0)
+        self.bodyFrame.pack(side="top", fill="both", expand=True)
+        self.body1Frame = customtkinter.CTkFrame(self, fg_color="transparent", corner_radius=0)
+        self.body1Frame.pack(side="top", fill="both")
+        self.footerFrame = customtkinter.CTkFrame(self, fg_color="transparent", height=26, corner_radius=0)
+        self.footerFrame.pack(side="top", fill="both")
 
         # Object inside title frame
         self.exitLabel = customtkinter.CTkLabel(self.titleFrame, text="", width=0, height=0,
@@ -183,6 +213,11 @@ class SelectApplication(customtkinter.CTkFrame):
             button.configure(image=self.icon(name, 0.05))
 
     def Click(self, button):
+        self.controller.show_frame("Download")
+        x = self.controller.winfo_x()
+        y = self.controller.winfo_y()
+        _height = self.controller.winfo_height()
+        self.controller.geometry(f"400x150+{x}+{y + (_height/2 - 100)}")
         name = button.bindtags()[0]
         if button.cget("border_width") == 0:
             button.configure(border_width=1, border_color="orange")
