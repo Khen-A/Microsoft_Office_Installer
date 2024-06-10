@@ -1,0 +1,9 @@
+{
+    "files": [
+        "MainWindow.py",
+        "form.ui",
+        "resources.qrc",
+        "Configuration-x64.xml",
+        "DeploymentTool.exe"
+    ]
+}
