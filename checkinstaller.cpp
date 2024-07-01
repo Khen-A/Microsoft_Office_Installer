@@ -15,7 +15,7 @@ bool CheckInstaller::Folder() {
     QString path = QCoreApplication::applicationDirPath();
     QDirIterator it(path, QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
 
-    QJsonArray installerfolder = JsonData.value("").toArray();
+    QJsonArray installerfolder = JsonData.value("Installer_Folders").toArray();
     QStringList foundFolders;
 
     while (it.hasNext()) {
