@@ -25,4 +25,4 @@ This application's primary objective is to make it easier to install the Microso
 
 **Enjoy the Microsoft Office installation experience with this application!** 
 
-**Note:** *THIS APPLICATION IS NOT FROM MICROSFT. IT WAS MADE FOR PROJECT ONLY*
+**Disclaimer:** *THIS APPLICATION IS NOT FROM MICROSFT. IT WAS MADE FOR PROJECT ONLY*
