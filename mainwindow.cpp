@@ -18,11 +18,18 @@ MainWindow::MainWindow(QWidget *parent)
     Path = QCoreApplication::applicationDirPath();
     Initialize_Data();
     Initialize_File();
+
     isWindowMove = false;
+    isDownloading = false;
+    isCancelDownload = false;
+    isFailedToDownload = false;
+    isInstalling = false;
+    isFailedToInstall = false;
+
     oldPos = QPoint(0, 0);
     QString ProductID = JsonData.value("ProductID").toString();
     QString BuildNo = JsonData.value("BuildNo").toString();
-    int total_byte = JsonData.value("total_byte").toInt();
+    int total_byte = JsonData.value("Total_Byte").toInt();
 
     ui->HeaderGrid->installEventFilter(this);
     ui->CloseButton->installEventFilter(this);
@@ -95,16 +102,24 @@ void MainWindow::Initialize_Data()
     QJsonDocument doc = QJsonDocument::fromJson(jsonData, &error);
     JsonData = doc.object();
 
-    QString bit = JsonData.value("bit").toString();
+    QString bit = JsonData.value("Bit").toString();
 
-    QJsonArray installerfiles = JsonData.value("installer_files").toArray();
+    QJsonArray installerfiles = JsonData.value("Installer_Files").toArray();
     for (int i = 0; i < installerfiles.size(); ++i) {
         QString folderName = installerfiles[i].toString();
-        folderName.replace("{bit}", bit);
+        if (folderName.contains("stream")) {
+            folderName.replace("{bit}", Converted_Architecture());
+        } else {
+            folderName.replace("{bit}", bit);
+        }
         installerfiles[i] = folderName;
     }
 
-    JsonData["installer_files"] = installerfiles;
+    if (bit == "32") {
+        installerfiles << "i640.cab" << "i640.cab.cat" << "i641033.cab";
+    }
+
+    JsonData["Installer_Files"] = installerfiles;
 }
 
 void MainWindow::Initialize_File()
@@ -125,7 +140,7 @@ void MainWindow::Initialize_File()
 
 QString MainWindow::Converted_Architecture()
 {
-    QString bit = JsonData.value("bit").toString();
+    QString bit = JsonData.value("Bit").toString();
     if (bit == "32") {
         return "86";
     }
@@ -376,7 +391,7 @@ void MainWindow::CreatingConfigFile() {
 
     QStringList configLines = configContent.split("\n");
 
-    QString newOfficeClientEdition = JsonData.value("bit").toString();
+    QString newOfficeClientEdition = JsonData.value("Bit").toString();
     QString newChannel = JsonData.value("Channel").toString();
     QString newVersion = JsonData.value("BuildNo").toString();
     QString newProductID = JsonData.value("ProductID").toString();
@@ -460,7 +475,7 @@ void MainWindow::Finished_Download()
 void MainWindow::downloadProgress(int Progress)
 {
     ui->progressBar->setValue(Progress);
-    int total_size = JsonData.value("total_byte").toInt();
+    int total_size = JsonData.value("Total_Byte").toInt();
     if (Progress >= total_size * 0.50 ){
         ui->progressBar->setStyleSheet("QProgressBar {"
                                        "   border: 1px solid rgb(95, 95, 95);"

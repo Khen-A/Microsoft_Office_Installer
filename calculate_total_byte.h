@@ -10,6 +10,8 @@ public:
     int Total_Byte();
 private:
     QJsonObject JsonData;
+
+    QString Converted_Architecture();
 };
 
 #endif // CALCULATE_TOTAL_BYTE_H

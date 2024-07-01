@@ -4,6 +4,8 @@
 InstallWorker::InstallWorker(QString path, QObject *parent)
     : QThread(parent), Path(path)
 {
+    _isRunning = false;
+    _isAlreadyHide = false;
 }
 
 void InstallWorker::run()
@@ -20,13 +22,13 @@ void InstallWorker::run()
 
     Process->start(tool, arguments);
     while (true) {
-        if (!_isRunning) {
-            Process->kill();
-            Process->waitForFinished();
+        if (!is_Setup_Running()) {
             return;
         }
 
-        if (!is_Setup_Running()) {
+        if (!_isRunning) {
+            Process->kill();
+            Process->waitForFinished();
             return;
         }
 

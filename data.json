@@ -1,10 +1,10 @@
 {
-    "bit": "64",
+    "Bit": "64",
     "ProductID": "ProPlus2021Volume",
     "BuildNo": "16.0.14332.20604",
     "Channel": "PerpetualVL2021",
-    "total_byte": 1941706985,
-    "installer_files": [
+    "Total_Byte": 1941706985,
+    "Installer_Files": [
         "v{bit}_16.0.14332.20604.cab",
         "i{bit}0.cab",
         "i{bit}0.cab.cat",
@@ -16,7 +16,7 @@
         "stream.x{bit}.x-none.dat",
         "stream.x{bit}.x-none.dat.cat"
     ],
-    "installer_folders": [
+    "Installer_Folders": [
         "Office",
         "Data",
         "16.0.14332.20604"

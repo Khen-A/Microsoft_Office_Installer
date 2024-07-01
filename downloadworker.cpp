@@ -22,7 +22,7 @@ void DownloadWorker::run()
     Process->start(tool, arguments);
 
     Calculate_Total_Byte current_byte(JsonData);
-    int total_byte = JsonData.value("total_byte").toInt();
+    int total_byte = JsonData.value("Total_Byte").toInt();
     int timeOut = 0;
     int byte = 0;
     while (byte < total_byte)

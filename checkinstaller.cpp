@@ -9,28 +9,26 @@
 CheckInstaller::CheckInstaller(const QJsonObject& jsonData)
     : JsonData(jsonData)
 {
-
 }
 
 bool CheckInstaller::Folder() {
     QString path = QCoreApplication::applicationDirPath();
     QDirIterator it(path, QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
 
-    QString BuildNo = JsonData.value("BuildNo").toString();
-    QStringList installerfolder = {"Office", "Data", BuildNo};
+    QJsonArray installerfolder = JsonData.value("").toArray();
     QStringList foundFolders;
 
     while (it.hasNext()) {
         QString subdir = it.next();
         QString name = QFileInfo(subdir).fileName();
-        for (const QString& fname: installerfolder) {
+        for (const QJsonValue& fname: installerfolder) {
             if (name == fname) {
                 foundFolders.append(name);
             }
         }
     }
 
-    for (const QString &file : installerfolder) {
+    for (const QJsonValue &file : installerfolder) {
         if (!foundFolders.contains(file) && !foundFolders.contains("Office")) {
             return false;
         }
@@ -42,7 +40,7 @@ bool CheckInstaller::Folder() {
 bool CheckInstaller::File_Size() {
     Calculate_Total_Byte File(JsonData);
 
-    qint64 total_size = JsonData.value("total_byte").toInt();
+    int total_size = JsonData.value("Total_Byte").toInt();
     int size = File.Total_Byte();
     if (size == total_size) {
         return true;
@@ -55,8 +53,8 @@ bool CheckInstaller::Correct_Path() {
     QDirIterator it(path, QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
 
     QString BuildNo = JsonData.value("BuildNo").toString();
-    QString bit = JsonData.value("bit").toString();
-    QJsonArray installerfiles = JsonData.value("installer_files").toArray();
+    QString bit = JsonData.value("Bit").toString();
+    QJsonArray installerfiles = JsonData.value("Installer_Files").toArray();
 
     QStringList correctPath;
     for (const QJsonValue &file : installerfiles) {
