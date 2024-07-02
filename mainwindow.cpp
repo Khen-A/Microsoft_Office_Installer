@@ -7,8 +7,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
-#include <Windows.h>
 #include <QDir>
+#include <Windows.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -103,16 +103,18 @@ void MainWindow::Initialize_Data()
     JsonData = doc.object();
 
     QString bit = JsonData.value("Bit").toString();
+    QString buildNo = JsonData.value("BuildNo").toString();
 
     QJsonArray installerfiles = JsonData.value("Installer_Files").toArray();
     for (int i = 0; i < installerfiles.size(); ++i) {
-        QString folderName = installerfiles[i].toString();
-        if (folderName.contains("stream")) {
-            folderName.replace("{bit}", Converted_Architecture());
+        QString fileName = installerfiles[i].toString();
+        if (fileName.contains("stream")) {
+            fileName.replace("{Bit}", Converted_Architecture());
         } else {
-            folderName.replace("{bit}", bit);
+            fileName.replace("{Bit}", bit);
         }
-        installerfiles[i] = folderName;
+        fileName.replace("{BuildNo}", buildNo);
+        installerfiles[i] = fileName;
     }
 
     if (bit == "32") {
@@ -120,6 +122,15 @@ void MainWindow::Initialize_Data()
     }
 
     JsonData["Installer_Files"] = installerfiles;
+
+    QJsonArray installerfolders = JsonData.value("Installer_Folders").toArray();
+    for (int i = 0; i < installerfolders.size(); ++i) {
+        QString folderName = installerfolders[i].toString();
+        folderName.replace("{BuildNo}", buildNo);
+        installerfolders[i] = folderName;
+    }
+
+    JsonData["Installer_Folders"] = installerfolders;
 }
 
 void MainWindow::Initialize_File()
@@ -322,7 +333,7 @@ void MainWindow::Installation_Option()
 
 void MainWindow::Checking_Installer()
 {
-    CheckInstaller Check(JsonData);
+    CheckInstaller Check(Path, JsonData);
 
     if (Check.Correct_Path() && Check.File_Size()) {
         ui->stackedWidget->setCurrentIndex(1);
@@ -339,7 +350,7 @@ void MainWindow::Checking_Installer()
                 ui->MessageLabel->setText("No installation file was found.");
                 ui->doiButton->setText("Download O̲ffline Installer");
                 Align_To_Center(500, 230);
-            } else if ((!Check.Folder() && Check.File_Size()) or (!Check.Correct_Path() && Check.File_Size())) {
+            } else if (!Check.Correct_Path() && Check.File_Size()) {
                 ui->MessageLabel->setStyleSheet("font: 600 18pt 'Segoe UI';"
                                                 "color: rgb(95, 95, 95)");
                 ui->MessageLabel->setText("Wrong installation folder path.");

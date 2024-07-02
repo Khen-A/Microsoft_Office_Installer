@@ -1,8 +1,8 @@
 #include <windows.h>
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -19,12 +19,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Microsoft Corporation\0"
             VALUE "FileDescription", "Microsoft Office\0"
-            VALUE "FileVersion", "1.0.0.0\0"
+            VALUE "FileVersion", "1.0.0.1\0"
             VALUE "InternalName", "Office Deployment Tool\0"
             VALUE "LegalCopyright", "(C) 2024 Microsoft Corporation\0"
             VALUE "OriginalFilename", "setup.exe\0"
             VALUE "ProductName", "Microsoft Office Installer\0"
-            VALUE "ProductVersion", "1.0.0.0\0"
+            VALUE "ProductVersion", "1.0.0.1\0"
         END
     END
     BLOCK "VarFileInfo"

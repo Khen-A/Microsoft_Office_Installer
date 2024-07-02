@@ -5,12 +5,13 @@
 class CheckInstaller
 {
 public:
-    CheckInstaller(const QJsonObject& jsonData);
+    CheckInstaller(QString path, QJsonObject& jsonData);
 
     bool Folder();
     bool File_Size();
     bool Correct_Path();
 private:
+    QString Path;
     QJsonObject JsonData;
 };
 
